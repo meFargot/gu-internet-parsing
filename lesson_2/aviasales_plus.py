@@ -10,6 +10,11 @@ import requests
 
 from pprint import pprint
 
+try:
+    from proxies import proxyDict
+except ImportError:
+    proxyDict = None
+
 
 CITY_DATA_URL = 'http://api.travelpayouts.com/data/en/cities.json'
 TICKETS_DATA_URL = 'http://min-prices.aviasales.ru/calendar_preload'
@@ -29,7 +34,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 # определить IATA коды
-city_data_response = requests.get(CITY_DATA_URL)
+city_data_response = requests.get(CITY_DATA_URL, proxies=proxyDict)
 city_data_json = city_data_response.json()
 
 from_city_iata, to_city_iata = None, None
@@ -53,7 +58,8 @@ api_params = {
     'origin_iata': from_city_iata,
     'destination': to_city_iata,
 }
-tickets_data_response = requests.get(TICKETS_DATA_URL, params=api_params)
+tickets_data_response = requests.get(TICKETS_DATA_URL, params=api_params,
+                                     proxies=proxyDict)
 tickets_data_json = tickets_data_response.json()
 
 # вывод данных
